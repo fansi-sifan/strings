@@ -1,0 +1,193 @@
+---
+title: "Brookings Data Network: String Basics"
+author: "Sifan Liu"
+date: "`r Sys.Date()`"
+output:
+  xaringan::moon_reader:
+    nature:
+      ratio: 16:9
+---
+
+# Hello!
+
+```{r setup, include = F}
+library(xaringanExtra)
+xaringanExtra::use_panelset()
+knitr::opts_chunk$set(warning=FALSE)
+```
+
+### What we will cover:
+- What is a string?
+- What can we do with strings in R?
+
+--
+
+### What we won't cover:
+- Regular Expressions (RegEx)
+
+???
+My name is Sifan Liu, Senior Research Analyst at Brookings Metro. I am also the current co-chair of Brookings Data Network. 
+Today, we are going to talk about how to work with strings in R. We will focus on the basics, without going into Regular Expressions.
+
+---
+# String Basics
+- They are also known as "text", "characters", etc. 
+
+--
+
+- Strings are always quoted with single quotes `''` or double quotes `""`.
+```{r define}
+a <- "I am a string"
+a
+typeof(a)
+```
+--
+```{r}
+b <- c("We are", "also strings")
+b
+typeof(b)
+```
+
+```{r}
+as.data.frame(b)
+```
+
+---
+# String basics
+
+.panelset[
+.panel[.panel-name[Quiz]
+
+Which of the following object is not a string?
+
+1. TRUE
+
+1. "16"
+
+1. c("a", "30")
+
+1. "\n"
+
+
+]
+
+.panel[.panel-name[Answer]
+
+```{r error=TRUE}
+
+typeof(TRUE)
+typeof("16")
+typeof(c("a", 30))
+typeof("\n")
+```
+]
+]
+
+---
+
+# Let's clean some strings!
+
+```{r, include = F}
+df <- tibble::tribble(
+        ~state, ~state_code, ~state_name, ~county_code,          ~county,
+          "AL",          1L,   "Alabama ",           1L, "Autauga County",
+          "AL",          1L,   "Alabama",           3L, "Baldwin county",
+          "AL",          1L,   " Alabama",           5L, "Barbour County",
+          "AL",          1L,   "Alabama ",           7L,    "Bibb County",
+          "AL",          1L,   "Alabama",           9L,  "Blount COUNTY",
+          "AL",          1L,   "Alabama",          11L, "Bullock County"
+        )
+
+```
+
+```{r}
+df
+```
+--
+```{r length, warning=FALSE}
+library(stringr)
+str_length(df$state_name)
+```
+---
+# Managing length
+### str_trim()
+removes whitespace from a string
+```{r}
+df$state_name %>% 
+  str_trim() %>%
+  str_length()
+```
+--
+### str_pad()
+pads a string to a new length
+```{r}
+str_pad(df$county_code, width = 3, side = "left", pad = "0")
+```
+
+---
+# Convert case
+
+```{r}
+str_to_lower("Blount COUNTY")
+str_to_upper("Blount COUNTY")
+str_to_title("Blount COUNTY")
+```
+---
+# Subset and combine
+## str_sub()
+```{r}
+str_sub(df$county, start = 1, end = -8)
+
+```
+
+--
+## str_c()
+```{r}
+str_c(df$state, ",US")
+```
+
+---
+# Detect, extract, replace
+## str_detect()
+```{r}
+str_detect(df$county, "a")
+
+df %>% 
+  dplyr::filter(str_detect(county, "a"))
+```
+
+---
+# Detect, extract, replace
+## str_extract
+```{r}
+str_extract(df$county, "county")
+```
+## str_replace
+```{r}
+df$county %>% 
+  str_to_lower() %>% 
+  str_replace("county", "cty")
+```
+
+---
+# Let's code!
+
+---
+# What's next?
+## Advanced 
+[stringi](https://stringi.gagolewski.com/)
+
+--
+
+## Regular Expressions
+- define more complex search patterns
+1. extract all numbers in the strings
+2. remove all characters after the last `.`
+3. find the string that ends with "s"
+
+--
+
+## Special forms of strings
+- Dates and time: [lubridate](https://lubridate.tidyverse.org/)
+- Human names: [humaniformat](https://cran.r-project.org/web/packages/humaniformat/vignettes/Introduction.html)
+- Addresses: [tidygeocoder](https://cran.r-project.org/web/packages/tidygeocoder/vignettes/tidygeocoder.html)
