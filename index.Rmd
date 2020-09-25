@@ -13,7 +13,7 @@ output:
 ```{r setup, include = F}
 library(xaringanExtra)
 xaringanExtra::use_panelset()
-knitr::opts_chunk$set(warning=FALSE)
+knitr::opts_chunk$set(warning = FALSE)
 ```
 
 ### What we will cover:
@@ -23,15 +23,15 @@ knitr::opts_chunk$set(warning=FALSE)
 
 ???
 My name is Sifan Liu, Senior Research Analyst at Brookings Metro. I am also the current co-chair of Brookings Data Network. 
-Today, we are going to talk about how to work with strings in R. Our first fifteen minutes will focus on the basics - this will be great for someone who has some data analysis experience in Stata, Excel, but is new to R, or if you are quite familiar with R already, but are mostly self-taught, and would like to have a comprehensive overview of what you could do with strings in R. 
+Today, we are going to talk about how to work with strings in R. Our first fifteen minutes will focus on the basics - this will be great for someone who is new to R, but probably has some data analysis experience in Stata, Excel, or if you are already a R user, but mostly self-taught, and would like to have a refresher on what you could do with strings in R. 
 
 ---
 # String basics
-- They are also known as "text", "characters", etc. 
+- They are also known as "text", "characters", ("chr" for short), etc. 
 
 ???
-Okay. The first thing you need to know is that strings have many names. You might have heard "text asee "text", "characters" in references, and we use them interchangeably. 
-The way to spot them in R is simple - they are always quoted with either single quotes, or double quotes, no difference. 
+Okay. The first thing you need to know is that strings have many names. They are sometimes called "text" as in "text analysis", or "characters", and we use them interchangeably. 
+The way to identify them in R is quite simple - they are always quoted with either single quotes, or double quotes, doesn't matter. 
 --
 
 - Strings are always quoted with single quotes `''` or double quotes `""`.
@@ -43,7 +43,7 @@ typeof(a)
 
 ???
 
-For example, Here I created a string by using double quotes around the text. In R, you can use typeof() function to get the type of the object
+For example, Here I created a string by using double quotes around the text. In R, you can use typeof() function to ask directly, what is the type of the object, and here it tells me, it's "character"
 ---
 # String basics
 ```{r}
@@ -51,21 +51,22 @@ b <- c("We are", "also strings")
 b
 ```
 ???
-Here's another example - you can also create a vector of characters by using the C function in R, which combines all arguments to form a vector. 
+Here's another example - you can also create a vector of characters by using the C function in R, which combines all arguments in the funciton to form a vector. 
+We just showed that when you print a character or a character vector, R always returns the strings with quotes. But that's not the case with dataframes. 
 --
 
 ```{r}
 as.data.frame(b)
 ```
 ???
-We just showed that when you print a character or a character vector, R always returns the strings with quotes. But that's not the case with dataframes. If we turn the character vector b that we just created to a dataframe, it no longer shows you the quotes. 
+If we turn the character vector b that we just created to a dataframe, it no longer shows you the quotes. 
 --
 ```{r}
 tibble::as_tibble(b)
 ```
 
 ???
-That's why I always like to use tibbles - this is also from the tidyverse collections. Tibbles are dataframes, but they have some nice features, including printing the data type of each column
+That's why I always like to use tibbles - also from the tidyverse collections. Tibbles are dataframes, but they have some nice features, including printing the data type of each column
 ---
 # Quiz
 
@@ -108,23 +109,22 @@ Can anyone tell me why number 3 is also a character - there are no quotes around
 
 ```{r, include = F}
 df <- tibble::tribble(
-        ~state, ~state_code, ~state_name, ~county_code,          ~county,
-          "AL",          1L,   "Alabama ",           1L, "Autauga County",
-          "AL",          1L,   "Alabama",           3L, "Baldwin county",
-          "AL",          1L,   " Alabama",           5L, "Barbour County",
-          "AL",          1L,   "Alabama ",           7L,    "Bibb County",
-          "AL",          1L,   "Alabama",           9L,  "Blount COUNTY",
-          "AL",          1L,   "Alabama",          11L, "Bullock County"
-        )
-
+  ~state_code, ~state_name, ~county_code, ~county,
+  1L, "Alabama ", 1L, "Autauga County",
+  1L, "AL",       3L, "Baldwin county",
+  1L, " Alabama", 5L, "Barbour County",
+  1L, "Alabama ", 7L, "Bibb County",
+  1L, "AL",       9L, "Blount COUNTY",
+  1L, "Alabama", 11L, "Bullock County"
+)
 ```
 
 ```{r}
-library(stringr)  # "str_"
+library(stringr) # "All functions start with 'str_'"
 ```
 
 ???
-Now, let's move on to see what we can do with strings, and we will be using the stringr library, which is part of the tidyverse. All the functions in the stringr function starts with "str_", which is easy to navigate. 
+Now, let's move on to see what we can do with strings, and we will be using the stringr library, which is part of the tidyverse. All the functions in the stringr function starts with "str_". 
 
 --
 ```{r}
@@ -134,14 +134,7 @@ df
 ???
 
 Here's a dataframe containing the name of counties, states, and the respective state code and county code. 
---
 
-```{r length, warning=FALSE}
-str_length(df$state_name)
-```
-
-
-???
 Please type in the chat, what did you notice from this dataset?
 - spaces in state name (copy from Excel)
 - county name are in various case (we can use str_length() to quickly show the number of characters in each string - the uneven lengths suggest that there are indeed hidden spaces)
@@ -149,28 +142,30 @@ Please type in the chat, what did you notice from this dataset?
 
 ---
 # Managing length
+
+???
+The easiest thing we could do is to manage the length of a string, you can trim the extra spaces from a string, or pad a string with spaces or other characters. 
+
+--
 ### str_trim()
-removes whitespace from a string
 ```{r}
-df$state_name %>% 
+df$state_name
+df$state_name %>%
   str_trim()
 ```
 
 ???
-To manage the length of a string, you can trim a string, or pad a string with spaces or other characters. 
-
-Let's first look at trim. To remove whitespace from a string, we use str_trim(), you can specify if you want to trim the white space from left, right - the default is both. Now all the state names are of equal length.
+Let's first look at trim. To remove whitespace from a string, we use str_trim(), you can specify if you want to trim the white space from left or right - and the default is both. Now we have all the state names without spaces.
 --
 ### str_pad()
-pads a string to a new length
 ```{r}
-df$state_name %>% 
-  str_pad(width = 8, side = "left", pad = " ")
+df$state_name %>%
+  str_pad(width = 8, side = "right", pad = "_")
 ```
 
 ???
 
-In contrast, str_pad allows you to pad a string with a given length.You can specify the expected length of your string, which side to pad, and which characters to pad. In this case I'm adding white spaces to the left to make all the string have a lenghth of eight
+The opposite of str_trim is str_pad, which allows you to pad a string with a given length. You specify in order, the expected length of your string, which side to pad, and which characters to pad. In this case I'm adding _ to the left to make all the string have a lenghth of eight. 
 
 ---
 # Convert case
@@ -182,7 +177,7 @@ str_to_title("Blount COUNTY")
 ```
 
 ???
-Another useful function is case converstion. Stringr supports three types of case: all lower case, all upper case, or title case, which capitalize the first character of each word. This is very helpful in text analysis, because you want to make sure these variations are recognized as the same word.
+Another useful function is case converstion. Stringr supports three types of case: all lower case, all upper case, or title case, which capitalize the first character of each word. This can be very helpful when you want to make sure different variations of a word are recognized as the same word.
 
 ---
 # Subset and combine
@@ -190,55 +185,56 @@ Another useful function is case converstion. Stringr supports three types of cas
 ```{r}
 df$county
 str_sub(df$county, start = 1, end = -8)
-
 ```
 
 ???
-You could also remove characters at specified positions - if I only want to keep the first part of the county name, I use str_sub to keep the string "start from position 1", which is the first character, to the 8th character counting from the end. Note that you can use the negative sign to specify positions from the end.
+You could also subtract characters at specified positions - if I only want to keep the first part of the county name, I use str_sub to keep the string "starting from position 1", which is the first character, to the 8th character counting from the end. Note that you can use the negative sign to specify positions from the end.
 
 --
 ### str_c()
 ```{r}
-str_c(df$state, ",US")
+str_c(df$state_name, ", US")
 ```
 
 
 ???
-In contrast, you can combine strings by using str_c(). Here I am adding "US" to the state names.
+The opposite of this, you can combine strings by using str_c(). Here I am adding "US" to the state names.
 
 ---
 # Detect and replace
+
+???
+The final set of functions is detecting certain characters from the string, and you can replace it with another word.
+--
+
 ### str_detect()
 ```{r}
-str_detect(df$county, "a")
+df$state_name
+str_detect(df$state_name, pattern = "AL")
 ```
 
 ???
-Another set of useful functions is detect certain characters, from the string, and you can either extract it, or replace it with another word.
-Here I'm using str_detect() to find if any of the county names contain the letter "a".
+Here I'm using str_detect() to find which of the county names contain the letter "a". Notice that it is case sensitive, and it return a vector of T/F
 --
 
 ```{r}
-df %>% 
-  dplyr::filter(str_detect(county, "a"))
+df %>%
+  dplyr::filter(str_detect(state_name, pattern = "AL"))
 ```
 
 ???
-Notice that this function return a vector of T/F, This can be combined with filter function to return the data that meets the criteria. 
+This can be combined with filter function to return the data that meets the criteria. 
 
 ---
 # Detect and replace
 ### str_replace()
 ```{r}
-df$county %>% 
-  str_to_lower() %>% 
-  str_replace("county", "cty")
+df$state_name
+str_replace(string = df$state_name, pattern = "AL", replacement = "Alabama")
 ```
 
 ???
-Similar to str_detect(), str_extract_all() returns the entire string, instead of just returning the T/F value
-
-You can also modify the part of the string that has been detected, by using str_replace(), and you just need to specify the replacement value. 
+Similar to str_detect(), str_replace() allows you to modify the part of the string that has been detected with the replacement value you specified. 
 ---
 # Let's code!
 
@@ -252,7 +248,7 @@ You can also modify the part of the string that has been detected, by using str_
 --
 
 ## Regular Expressions
-- define more complex search patterns
+Define more complex search patterns, for examples:
 1. extract all numbers in the strings
 2. remove all characters after the last `.`
 3. find the string that ends with "s"
