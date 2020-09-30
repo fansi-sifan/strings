@@ -259,3 +259,4 @@ Define more complex search patterns, for examples:
 - Dates and time: [lubridate](https://lubridate.tidyverse.org/)
 - Human names: [humaniformat](https://cran.r-project.org/web/packages/humaniformat/vignettes/Introduction.html)
 - Addresses: [tidygeocoder](https://cran.r-project.org/web/packages/tidygeocoder/vignettes/tidygeocoder.html)
+- Extract data from PDFs: [tabulizer](https://cran.r-project.org/web/packages/tabulizer/vignettes/tabulizer.html), [pdftools](https://github.com/ropensci/pdftools)
