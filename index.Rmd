@@ -72,7 +72,7 @@ b
 Here's another example - you can also create a vector of characters by using the C function in R, which combines all arguments in the funciton to form a vector. 
 We just showed that when you print a character or a character vector, R always returns the strings with quotes. But that's not the case with dataframes. 
 --
-
+exclude: true
 #### data frame
 ```{r, echo = F}
 as.data.frame(b)
@@ -80,7 +80,7 @@ as.data.frame(b)
 ???
 In a dataframe, it no longer shows you the quotes. 
 --
-
+exclude: true
 #### tibble
 ```{r, echo = F}
 tibble::as_tibble(b)
@@ -89,6 +89,7 @@ tibble::as_tibble(b)
 ???
 That's why I always like to use tibbles - also from the tidyverse collections. Tibbles are dataframes, but they have some nice features, including printing the data type of each column
 ---
+exclude: true
 # Quiz
 
 .panelset[
@@ -100,7 +101,7 @@ Which of the following object is not a string?
 
 1. "16"
 
-1. c("a", 30)
+1. c("a", "30")
 
 1. "\n"
 
@@ -227,8 +228,9 @@ Another useful function is case converstion. Stringr supports three types of cas
 
 ---
 # Subset and combine
-### str_sub()
+
 .pull-left[
+### str_sub()
 ```{r}
 df["county"]
 ```
@@ -239,15 +241,25 @@ df["county"]
 
 .pull-right[
 ```{r}
-df$county <- str_sub(df$county, 
-                     start = 1, end = -8)
+df$county <- str_sub(df$county, start = 1, end = -8)
 df["county"]
 ```
+
+--
+
+```{r, echo=F}
+str <- "Autauga County" %>% str_split("") %>% unlist()
+
+rbind(left = seq(str_length(str)), 
+      right = -rev(seq(str_length(str))), 
+      chr = str) %>% knitr::kable()
+```
+
+
 ]
 
 ???
 You could also subtract characters at specified positions - if I only want to keep the first part of the county name, I use str_sub to keep the string "starting from position 1", which is the first character, to the 8th character counting from the end. Note that you can use the negative sign to specify positions from the end.
-
 ---
 ### str_c()
 ```{r}
@@ -273,6 +285,8 @@ df["state_name"]
 ```
 
 ]
+
+--
 
 .pull-right[
 ```{r}
@@ -319,6 +333,15 @@ Similar to str_detect(), str_replace() allows you to modify the part of the stri
 ---
 # Let's code!
 
+.pull-left[
+```{r}
+df[c("state_code", "county_code")]
+```
+]
+
+.pull-right[
+.center[![fips code explainer](fips.png)]
+]
 ---
 # What's next?
 
