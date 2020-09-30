@@ -19,6 +19,11 @@ knitr::opts_chunk$set(warning = FALSE)
 ### What we will cover:
 - What is a string?
 - What can we do with strings in R?
+1. manage length: `str_trim()`, `str_pad()`
+2. convert case: `str_to_lower()`, `str_to_upper()`, `str_to_title()`
+3. subset and combine: `str_sub()`, `str_c()`
+4. detect and replace: `str_detect()`, `str_replace()`
+
 
 
 ???
@@ -46,7 +51,7 @@ typeof(a)
 For example, Here I created a string by using double quotes around the text. In R, you can use typeof() function to ask directly, what is the type of the object, and here it tells me, it's "character"
 ---
 # String basics
-```{r}
+```{r, echo = F}
 b <- c("We are", "also strings")
 b
 ```
@@ -55,12 +60,15 @@ Here's another example - you can also create a vector of characters by using the
 We just showed that when you print a character or a character vector, R always returns the strings with quotes. But that's not the case with dataframes. 
 --
 
-```{r}
+data frame
+```{r, echo = F}
 as.data.frame(b)
 ```
 ???
 If we turn the character vector b that we just created to a dataframe, it no longer shows you the quotes. 
 --
+
+tibble
 ```{r}
 tibble::as_tibble(b)
 ```
