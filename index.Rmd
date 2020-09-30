@@ -16,19 +16,31 @@ xaringanExtra::use_panelset()
 knitr::opts_chunk$set(warning = FALSE)
 ```
 
-### What we will cover:
-- What is a string?
-- What can we do with strings in R?
+???
+My name is Sifan Liu, Senior Research Analyst at Brookings Metro. I am also the current co-chair of Brookings Data Network. 
+Today, we are going to talk about how to work with strings in R. Our first fifteen minutes will focus on the basics - this will be great for someone who is new to R, but probably has some data analysis experience in Stata, Excel, or if you are already a R user, but mostly self-taught, and would like to have a refresher on what you could do with strings in R. 
+
+--
+## What we will cover:
+### What is a string?
+1. how to create strings
+2. how to recognize strings
+
+???
+What we will cover first is the definition. We will learn how to create strings in R, and how to tell if a object is a string
+
+--
+
+### What can we do with strings in R?
 1. manage length: `str_trim()`, `str_pad()`
 2. convert case: `str_to_lower()`, `str_to_upper()`, `str_to_title()`
 3. subset and combine: `str_sub()`, `str_c()`
 4. detect and replace: `str_detect()`, `str_replace()`
 
-
-
 ???
-My name is Sifan Liu, Senior Research Analyst at Brookings Metro. I am also the current co-chair of Brookings Data Network. 
-Today, we are going to talk about how to work with strings in R. Our first fifteen minutes will focus on the basics - this will be great for someone who is new to R, but probably has some data analysis experience in Stata, Excel, or if you are already a R user, but mostly self-taught, and would like to have a refresher on what you could do with strings in R. 
+We will then go over a couple most commonly used functions that help you to work with strings. 
+
+Any questions before we move on?
 
 ---
 # String basics
@@ -51,25 +63,26 @@ typeof(a)
 For example, Here I created a string by using double quotes around the text. In R, you can use typeof() function to ask directly, what is the type of the object, and here it tells me, it's "character"
 ---
 # String basics
-```{r, echo = F}
+```{r}
 b <- c("We are", "also strings")
 b
 ```
+
 ???
 Here's another example - you can also create a vector of characters by using the C function in R, which combines all arguments in the funciton to form a vector. 
 We just showed that when you print a character or a character vector, R always returns the strings with quotes. But that's not the case with dataframes. 
 --
 
-data frame
+#### data frame
 ```{r, echo = F}
 as.data.frame(b)
 ```
 ???
-If we turn the character vector b that we just created to a dataframe, it no longer shows you the quotes. 
+In a dataframe, it no longer shows you the quotes. 
 --
 
-tibble
-```{r}
+#### tibble
+```{r, echo = F}
 tibble::as_tibble(b)
 ```
 
@@ -156,24 +169,49 @@ The easiest thing we could do is to manage the length of a string, you can trim 
 
 --
 ### str_trim()
+
+.pull-left[
 ```{r}
-df$state_name
-df$state_name %>%
-  str_trim()
+df["state_name"]
 ```
+
+]
+--
+.pull-right[
+```{r}
+df$state_name <- str_trim(df$state_name)
+df["state_name"]
+```
+
+]
 
 ???
 Let's first look at trim. To remove whitespace from a string, we use str_trim(), you can specify if you want to trim the white space from left or right - and the default is both. Now we have all the state names without spaces.
---
+
+---
+# Managing length
 ### str_pad()
+.pull-left[
 ```{r}
-df$state_name %>%
-  str_pad(width = 8, side = "right", pad = "_")
+df["state_name"]
 ```
 
+]
+
+--
+
+.pull-right[
+```{r}
+df$state_name_pad <- str_pad(df$state_name,
+                         width = 8, 
+                         side = "left", 
+                         pad = " ")
+df["state_name_pad"]
+```
+]
 ???
 
-The opposite of str_trim is str_pad, which allows you to pad a string with a given length. You specify in order, the expected length of your string, which side to pad, and which characters to pad. In this case I'm adding _ to the left to make all the string have a lenghth of eight. 
+The opposite of str_trim is str_pad, which allows you to pad a string with a given length. You specify in order, the expected length of your string, which side to pad, and which characters to pad. In this case I'm adding "space" to the left to make all the string have a lenghth of eight, in order to create this nice right-aligning format.
 
 ---
 # Convert case
@@ -190,23 +228,36 @@ Another useful function is case converstion. Stringr supports three types of cas
 ---
 # Subset and combine
 ### str_sub()
+.pull-left[
 ```{r}
-df$county
-str_sub(df$county, start = 1, end = -8)
+df["county"]
 ```
+
+]
+
+--
+
+.pull-right[
+```{r}
+df$county <- str_sub(df$county, 
+                     start = 1, end = -8)
+df["county"]
+```
+]
 
 ???
 You could also subtract characters at specified positions - if I only want to keep the first part of the county name, I use str_sub to keep the string "starting from position 1", which is the first character, to the 8th character counting from the end. Note that you can use the negative sign to specify positions from the end.
 
---
+---
 ### str_c()
 ```{r}
-str_c(df$state_name, ", US")
+df$full_name <- str_c(df$county, ", ",df$state_name,", US")
+df["full_name"]
 ```
 
 
 ???
-The opposite of this, you can combine strings by using str_c(). Here I am adding "US" to the state names.
+The opposite of this, you can combine strings by using str_c(). Here I am combining the county name, state name, and character "US" to create a full name. 
 
 ---
 # Detect and replace
@@ -216,33 +267,55 @@ The final set of functions is detecting certain characters from the string, and 
 --
 
 ### str_detect()
+.pull-left[
 ```{r}
-df$state_name
-str_detect(df$state_name, pattern = "AL")
+df["state_name"]
 ```
+
+]
+
+.pull-right[
+```{r}
+df$state_is_AL <- str_detect(df$state_name, pattern = "AL")
+df["state_is_AL"]
+```
+]
 
 ???
 Here I'm using str_detect() to find which of the county names contain the letter "a". Notice that it is case sensitive, and it return a vector of T/F
---
 
+---
+exclude: true
 ```{r}
 df %>%
   dplyr::filter(str_detect(state_name, pattern = "AL"))
 ```
 
 ???
-This can be combined with filter function to return the data that meets the criteria. 
+This can be combined with filter function to return the data that meets the criteria.
 
 ---
 # Detect and replace
 ### str_replace()
+.pull-left[
 ```{r}
-df$state_name
-str_replace(string = df$state_name, pattern = "AL", replacement = "Alabama")
+df["state_name"]
 ```
+
+]
+
+.pull-right[
+```{r}
+df$state_name <- str_replace(string = df$state_name, 
+                             pattern = "AL", 
+                             replacement = "Alabama")
+df["state_name"]
+```
+]
 
 ???
 Similar to str_detect(), str_replace() allows you to modify the part of the string that has been detected with the replacement value you specified. 
+
 ---
 # Let's code!
 
@@ -257,9 +330,9 @@ Similar to str_detect(), str_replace() allows you to modify the part of the stri
 
 ## Regular Expressions
 Define more complex search patterns, for examples:
-1. extract all numbers in the strings
-2. remove all characters after the last `.`
-3. find the string that ends with "s"
+- extract all numbers in the strings
+- remove all characters after the last `.`
+- find the string that ends with "s"
 
 --
 
